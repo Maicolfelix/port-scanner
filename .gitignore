@@ -1,2 +1,4 @@
 __pycache__/
 *.json
+# Informes de escaneos reales: pueden contener datos de tus equipos
+reporte_*.md
