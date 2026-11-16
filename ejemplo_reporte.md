@@ -1,9 +1,10 @@
 # Informe de escaneo: scanme.nmap.org
 
-- **Fecha:** 2026-11-15 20:22
+- **Fecha:** 2026-11-15 20:36
 - **IP:** 45.33.32.156
 - **Exposición:** IP pública: visible para todo Internet. Bots escanean Internet completo en minutos.
-- **Puertos escaneados:** 10 en 3.28 s
+- **Tipo de escaneo:** TCP connect (handshake completo)
+- **Puertos escaneados:** 10 en 3.26 s
 - **Puertos abiertos:** 3
 - **Riesgo general:** 🟡 MEDIO
 

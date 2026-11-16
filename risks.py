@@ -33,6 +33,11 @@ PORTS = {
          "Un resolver abierto puede usarse en ataques DDoS de amplificación. Las transferencias de zona (AXFR) "
          "mal configuradas filtran todo el mapa interno de la red.",
          "Restringir la recursión a clientes internos y permitir AXFR solo a servidores secundarios."),
+    69: ("TFTP", "ALTO",
+         "Transferencia de archivos trivial (UDP), usada por routers, teléfonos IP y arranque por red.",
+         "No tiene autenticación: cualquiera puede descargar (y a veces subir) archivos, como configuraciones "
+         "de routers con contraseñas.",
+         "Deshabilitarlo o limitarlo a la red de administración."),
     80: ("HTTP", "MEDIO",
          "Servidor web sin cifrado.",
          "El tráfico (incluidos formularios y cookies) viaja en texto plano. La aplicación web puede tener "
@@ -46,10 +51,20 @@ PORTS = {
           "Directorio de servicios RPC de Unix (usado por NFS).",
           "Revela qué servicios internos corren y en qué puertos. Se ha usado para amplificación DDoS.",
           "Bloquearlo en el firewall para cualquier red externa."),
+    123: ("NTP", "MEDIO",
+          "Sincronización de la hora (UDP).",
+          "Servidores viejos responden al comando 'monlist' con 600 direcciones: amplificación DDoS de hasta 500x "
+          "(CVE-2013-5211). Alterar la hora rompe certificados y registros de auditoría.",
+          "Actualizar ntpd, deshabilitar monlist y no responder consultas desde Internet."),
     135: ("MS-RPC", "ALTO",
           "Llamadas a procedimientos remotos de Windows.",
           "Históricamente explotado por gusanos (Blaster, CVE-2003-0352). Permite enumerar información del sistema.",
           "Nunca exponerlo a Internet; limitarlo a la red interna con el Firewall de Windows."),
+    137: ("NetBIOS-NS", "ALTO",
+          "Servicio de nombres de NetBIOS (UDP) de Windows.",
+          "Revela el nombre del equipo, el dominio y usuarios conectados. Herramientas como Responder lo envenenan "
+          "para robar hashes de contraseñas en la red local.",
+          "Deshabilitar NetBIOS sobre TCP/IP y LLMNR si no se usan."),
     139: ("NetBIOS", "ALTO",
           "Compartición de archivos de Windows (versión antigua).",
           "Filtra nombres de equipos, usuarios y recursos compartidos. Base de ataques de relay de credenciales.",
@@ -58,6 +73,11 @@ PORTS = {
           "Acceso al buzón de correo, sin cifrado.",
           "Las credenciales del correo viajan en texto plano.",
           "Usar IMAPS (puerto 993) y cerrar el 143."),
+    161: ("SNMP", "ALTO",
+          "Monitoreo y administración de equipos de red (UDP): routers, switches, impresoras.",
+          "Muchos equipos dejan la comunidad por defecto 'public' (o 'private', que permite escribir): se lee la "
+          "configuración completa del equipo, y a veces se puede cambiar. SNMP v1/v2c viaja sin cifrar.",
+          "Usar SNMPv3 con autenticación y cifrado, cambiar las comunidades por defecto y limitar por IP."),
     443: ("HTTPS", "BAJO",
           "Servidor web cifrado con TLS.",
           "El cifrado protege el transporte, no la aplicación: puede tener las mismas fallas web que HTTP. "
@@ -68,6 +88,11 @@ PORTS = {
           "Vector de los ataques más destructivos de la historia: EternalBlue (MS17-010) permitió a WannaCry y "
           "NotPetya propagarse solos por redes enteras. También se usa para fuerza bruta y robo de credenciales.",
           "Nunca exponerlo a Internet. Deshabilitar SMBv1, aplicar parches y exigir firma SMB."),
+    500: ("IKE / IPsec VPN", "MEDIO",
+          "Negociación de llaves para VPNs IPsec (UDP).",
+          "Configuraciones con 'aggressive mode' y llave compartida (PSK) permiten capturar un hash y descifrar la "
+          "llave por fuerza bruta offline (ike-scan + psk-crack).",
+          "Deshabilitar aggressive mode, usar certificados en lugar de PSK y mantener el firmware al día."),
     993: ("IMAPS", "BAJO", "Correo IMAP cifrado con TLS.",
           "Riesgo principal: contraseñas débiles o robadas.",
           "Usar contraseñas fuertes y autenticación multifactor."),
@@ -82,6 +107,11 @@ PORTS = {
     1521: ("Oracle DB", "CRÍTICO", "Base de datos Oracle.",
            "Acceso directo a los datos; el listener puede filtrar información y tiene historial de CVEs.",
            "Restringir por firewall a los servidores de aplicación."),
+    1900: ("SSDP / UPnP", "ALTO",
+           "Descubrimiento automático de dispositivos (UDP): smart TVs, impresoras, routers.",
+           "UPnP permite que cualquier programa de la red abra puertos en el router sin preguntar (lo usa el malware). "
+           "Expuesto a Internet se usa para amplificación DDoS y revela modelo y versión del dispositivo.",
+           "Deshabilitar UPnP en el router y bloquear el 1900 desde Internet."),
     2049: ("NFS", "ALTO", "Sistema de archivos en red de Unix.",
            "Exportaciones mal configuradas permiten montar y leer (o escribir) carpetas del servidor desde cualquier equipo.",
            "Exportar solo a IPs específicas y usar root_squash."),
@@ -99,6 +129,10 @@ PORTS = {
            "Base de datos relacional.",
            "Acceso directo a los datos. Con credenciales, COPY ... FROM PROGRAM permite ejecutar comandos en el servidor.",
            "listen_addresses = 'localhost' o red interna, y reglas estrictas en pg_hba.conf."),
+    5353: ("mDNS", "BAJO",
+           "DNS multicast (UDP): permite encontrar equipos como 'mi-pc.local' sin servidor DNS (Bonjour, AirPlay).",
+           "Anuncia nombres de equipos y servicios a toda la red local. Expuesto a Internet sirve para amplificación DDoS.",
+           "Normal en redes domésticas; bloquearlo hacia Internet en el firewall."),
     5900: ("VNC", "CRÍTICO",
            "Control remoto gráfico del escritorio.",
            "Muchas instalaciones no tienen contraseña o usan una débil (máx. 8 caracteres). El tráfico suele ir sin cifrar.",
